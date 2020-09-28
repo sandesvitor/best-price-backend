@@ -5,7 +5,7 @@ require('dotenv').config()
 require('../db/database/index')
 
 const runBots = async () => {
-    await amazon()
+    // await amazon()
     await kabum()
 }
 

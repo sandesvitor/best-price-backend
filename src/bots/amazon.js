@@ -62,19 +62,28 @@ module.exports = async () => {
                 const product_link = await page.evaluate(() => location.href)
 
                 console.debug('Storing product on database')
-                const data = ({
-                    retailer: 'Amazon',
-                    code: product_sku,
-                    name: product_name,
-                    manufacturer: product_manufacturer,
-                    price: product_price,
-                    link: product_link,
-                    imageUrl: product_img
-                })
+                const skuCheck = await Product.findOne(
+                    {
+                        where: { code: data.code }
+                    }
+                )
 
-                // console.log(data)
-
-                await Product.create(data)
+                if (!skuCheck) {
+                    await Product.create(data)
+                } else {
+                    await Product.update(
+                        {
+                            name: data.name,
+                            manufacturer: data.manufacturer,
+                            price: data.price,
+                            link: data.link,
+                            imageUrl: data.imageUrl
+                        },
+                        {
+                            where: { id: skuCheck.id }
+                        }
+                    )
+                }
                 console.debug('Storage completed!')
 
                 console.log(`Scrapping completed on link ${count} of page ${j + 1}...`)

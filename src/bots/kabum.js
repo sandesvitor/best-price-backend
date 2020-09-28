@@ -10,39 +10,45 @@ module.exports = async () => {
         const page = await browser.newPage()
         page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36')
 
-        await page.goto(`https://www.kabum.com.br/hardware/${querySearch}?pagina=1&limite=100&prime=false&marcas=[]&tipo_produto=[]&filtro=[]`)
+        await page.goto(`https://www.kabum.com.br/hardware/${querySearch}?pagina=1`)
         console.log('Awaiting page to load...')
 
         await page.waitForSelector('.sc-fzozJi.dIEkef')
-        console.log('Page loaded!')
+        console.log('Caching total number of pages')
 
-        const numberOfPages = await page.$$eval('.sc-fzqBkg.eERuQY div', divs => {
-            return parseInt(divs[divs.length - 1].innerText)
+        await page.$eval('.sc-fzolEj.fblIKl', div => div.click())
+        await page.waitForSelector('.sc-fzozJi.dIEkef')
+
+        const numberOfPages = await page.$eval('.sc-fzqBkg.eERuQY .atual', div => {
+            return parseInt(div.innerText.match(/(?<=\[).*?(?=])/gs)[0])
         })
         console.log(`Total page number for navigation: ${numberOfPages}`)
+        await page.goto(`https://www.kabum.com.br/hardware/${querySearch}?pagina=1`)
+        await page.waitForSelector('.sc-fzozJi.dIEkef')
+        console.log('Page loaded!')
 
-        const links = await page.$$('.sc-fzozJi.dIEkef a')
+        const links = await page.$$('.sc-fzozJi.dIEkef > a')
         console.log(`Number of page links per page: ${links.length}`)
 
         let count = 1
 
         for (let j = 0; j < numberOfPages; j++) {
-            await page.goto(`https://www.kabum.com.br/hardware/${querySearch}?pagina=${j + 1}&limite=100&prime=false&marcas=[]&tipo_produto=[]&filtro=[]`)
+            await page.goto(`https://www.kabum.com.br/hardware/${querySearch}?pagina=${j + 1}`)
             await page.waitForSelector('.sc-fzozJi.dIEkef')
 
             for (let i = 0; i < links.length; i++) {
-                await page.goto(`https://www.kabum.com.br/hardware/${querySearch}?pagina=${j + 1}&limite=100&prime=false&marcas=[]&tipo_produto=[]&filtro=[]`)
+                await page.goto(`https://www.kabum.com.br/hardware/${querySearch}?pagina=${j + 1}`)
                 await page.waitForSelector('.sc-fzozJi.dIEkef')
-                const links = await page.$$('.sc-fzozJi.dIEkef a')
+                const links = await page.$$('.sc-fzozJi.dIEkef > a')
                 const link = links[i]
 
                 link.click()
 
-                console.log(`Beginning scrapping of link ${count} of page ${j + 1}...`)
+                console.log(`Beginning scrapping of link ${i + 1} of page ${j + 1}...`)
 
                 await page.waitForSelector('#titulo_det')
 
-                const product_sku = await page.$eval('#pag-detalhes div span', element => element.innerText)
+                const product_sku = await page.$eval('[data-produto]', element => element.getAttribute('data-produto'))
 
                 const product_img = await page.$eval('.imagem_produto_descricao', element => element.getAttribute('src'))
 
@@ -59,7 +65,7 @@ module.exports = async () => {
                 const product_link = await page.evaluate(() => location.href)
 
                 console.debug('Storing product on database')
-                const data = ({
+                const data = {
                     retailer: 'Kabum',
                     code: product_sku,
                     name: product_name,
@@ -67,15 +73,33 @@ module.exports = async () => {
                     price: product_price,
                     link: product_link,
                     imageUrl: product_img
-                })
+                }
 
-                // console.log(data)
 
-                await Product.create(data)
+                const skuCheck = await Product.findOne(
+                    {
+                        where: { code: data.code }
+                    }
+                )
+                if (!skuCheck) {
+                    await Product.create(data)
+                } else {
+                    await Product.update(
+                        {
+                            name: data.name,
+                            manufacturer: data.manufacturer,
+                            price: data.price,
+                            link: data.link,
+                            imageUrl: data.imageUrl
+                        },
+                        {
+                            where: { id: skuCheck.id }
+                        }
+                    )
+                }
                 console.debug('Storage completed!')
 
-                console.log(`Scrapping completed on link ${count} of page ${j + 1}...`)
-                count++
+                console.log(`Scrapping completed on link ${i + 1} of page ${j + 1}...`)
 
             }
         }
