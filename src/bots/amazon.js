@@ -8,15 +8,20 @@ module.exports = async () => {
     try {
         const browser = await puppeteer.launch({
             headless: true,
-            args: ['--no-sandbox']
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox'
+            ]
         })
         const page = await browser.newPage()
+        page.setDefaultNavigationTimeout(60000)
+        page.setDefaultTimeout(60000)
         page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36')
 
         await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=1`)
         console.log('Awaiting for page to load...')
 
-        await page.waitForSelector('.a-size-base-plus.a-color-base.a-text-normal')
+        await page.waitForSelector('.a-link-normal.s-no-outline')
         console.log('Page loaded!')
 
         const numberOfPages = await page.$$eval('.a-pagination li', li => {
@@ -27,8 +32,8 @@ module.exports = async () => {
         for (let j = 0; j < numberOfPages; j++) {
 
             await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=${j + 1}`)
-            await page.waitForSelector('.a-size-base-plus.a-color-base.a-text-normal')
-            const links = await page.$$('.sc-fzozJi.dIEkef > a')
+            await page.waitForSelector('.a-link-normal.s-no-outline')
+            const links = await page.$$('.a-link-normal.s-no-outline')
 
             console.log('There are [%s] links in page [%s]', links.length, j + 1)
 
@@ -108,12 +113,10 @@ module.exports = async () => {
         }
 
 
+        await browser.close();
 
     } catch (error) {
-        console.log('our error', error)
-
-    } finally {
-        browser.close();
+        console.log('Scrapper Error: ', erro.messager)
     }
 
 }

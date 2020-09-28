@@ -8,7 +8,10 @@ module.exports = async () => {
     try {
         const browser = await puppeteer.launch({
             headless: true,
-            args: ['--no-sandbox']
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox'
+            ]
         })
         const page = await browser.newPage()
         page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36')
@@ -112,12 +115,10 @@ module.exports = async () => {
             }
         }
 
+        await browser.close()
 
     } catch (error) {
-        console.log('our error', error)
-
-    } finally {
-        browser.close()
+        console.log('Scrapper Error: ', erro.messager)
     }
 
 
