@@ -10,7 +10,7 @@ const runBots = async () => {
     await kabum()
 }
 
-nodeCron.schedule("*/10 */1 * * *", async () => {
+nodeCron.schedule("*/11 */1 * * *", async () => {
     console.log("START OF WEB SCRAPPING at: ", new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''))
     await runBots()
     console.log("END OF WEB SCRAPPING at: ", new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''))
