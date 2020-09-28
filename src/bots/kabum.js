@@ -30,7 +30,7 @@ module.exports = async () => {
         await page.waitForSelector('.sc-fzozJi.dIEkef')
         console.log('Page loaded!')
 
-        for (let j = 10; j < numberOfPages; j++) {
+        for (let j = 0; j < numberOfPages; j++) {
             await page.goto(`https://www.kabum.com.br/hardware/${querySearch}?pagina=${j + 1}`)
             await page.waitForSelector('.sc-fzozJi.dIEkef')
             const links = await page.$$('.sc-fzozJi.dIEkef > a')
@@ -90,18 +90,21 @@ module.exports = async () => {
                     // await Product.create(data)
                 } else {
                     console.debug(data)
-                    // await Product.update(
-                    //     {
-                    //         name: data.name,
-                    //         manufacturer: data.manufacturer,
-                    //         price: data.price,
-                    //         link: data.link,
-                    //         imageUrl: data.imageUrl
-                    //     },
-                    //     {
-                    //         where: { id: skuCheck.id }
-                    //     }
-                    // )
+                    await Product.update(
+                        {
+                            name: data.name,
+                            manufacturer: data.manufacturer,
+                            price: data.price,
+                            link: data.link,
+                            imageUrl: data.imageUrl
+                        },
+                        {
+                            where: {
+                                retailer: 'Kabum',
+                                id: skuCheck.id
+                            }
+                        }
+                    )
                 }
                 console.debug('Storage completed!')
 

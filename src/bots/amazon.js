@@ -93,7 +93,10 @@ module.exports = async () => {
                             imageUrl: data.imageUrl
                         },
                         {
-                            where: { id: skuCheck.id }
+                            where: {
+                                retailer: 'Amazon',
+                                id: skuCheck.id
+                            }
                         }
                     )
                 }
