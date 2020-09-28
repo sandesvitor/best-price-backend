@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./dist/app.min.js",
+    "start": "node ./src/app.js",
     "dev": "nodemon ./src/app.js",
     "build": "gulp",
     "migrate": "cd src/ && npx dotenv -e ../.env sequelize db:migrate",
