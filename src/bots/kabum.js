@@ -113,10 +113,11 @@ module.exports = async () => {
         }
 
 
-        await browser.close()
-
     } catch (error) {
         console.log('our error', error)
+
+    } finally {
+        browser.close()
     }
 
 

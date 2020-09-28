@@ -6,11 +6,8 @@ require('dotenv').config()
 require('../db/database/index')
 
 const runBots = async () => {
-
-    // await amazon()
-    // await kabum()
-    console((Math.random * 100).toFixed(1))
-
+    await amazon()
+    await kabum()
 }
 
 nodeCron.schedule("*/10 */1 * * *", async () => {
