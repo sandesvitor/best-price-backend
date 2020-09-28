@@ -1,2 +1,2 @@
-worker: node ./src/bots/botsRunner
-web: npm start
+web: npm run dev
+worker: node ./src/bots/runner.js

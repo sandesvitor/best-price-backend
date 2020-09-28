@@ -6,8 +6,9 @@ require('dotenv').config()
 require('../db/database/index')
 
 const runBots = async () => {
-    await amazon()
-    await kabum()
+    // await amazon()
+    // await kabum()
+
 }
 
 nodeCron.schedule("0 5 * * *", async () => {
@@ -15,3 +16,5 @@ nodeCron.schedule("0 5 * * *", async () => {
     runBots()
     console.log("END OF WEB SCRAPPING at: ", new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''))
 })
+
+runBots()

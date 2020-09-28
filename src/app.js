@@ -6,8 +6,6 @@ require('./db/database/index')
 const PORT = process.env.PORT || 5000
 const app = express()
 
-const hello = require('./bots/helloWorld')
-
 app.use(express.json())
 app.use(routes)
 
