@@ -118,7 +118,7 @@ module.exports = async () => {
         await browser.close()
 
     } catch (error) {
-        console.log('Scrapper Error: ', erro.messager)
+        console.log('Scrapper Error: ', error.messager)
     }
 
 
