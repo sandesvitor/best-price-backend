@@ -3,7 +3,7 @@ const Product = require('../db/models/Product')
 
 let querySearch = 'placa+mae'
 
-module.exports = async () => {
+const amazon = async () => {
 
     try {
         const browser = await puppeteer.launch({
@@ -27,7 +27,7 @@ module.exports = async () => {
         const numberOfPages = await page.$$eval('.a-pagination li', li => {
             return parseInt(li[li.length - 2].innerText)
         })
-        console.log(`Total of pages for navigation: ${numberOfPages}`)
+        console.log('Total of pages for navigation: [%s]', numberOfPages)
 
         for (let j = 0; j < numberOfPages; j++) {
 
@@ -67,7 +67,7 @@ module.exports = async () => {
 
                 const product_link = await page.evaluate(() => location.href)
 
-                console.debug('Storing product on database')
+
                 const data = {
                     retailer: 'Amazon',
                     code: product_sku,
@@ -85,10 +85,12 @@ module.exports = async () => {
                     }
                 )
                 if (!skuCheck) {
-                    console.debug(data)
+                    console.info()
+                    console.info(data)
                     await Product.create(data)
                 } else {
-                    console.debug(data)
+                    console.info('New Product!\nStoring product on database:')
+                    console.info(data)
                     await Product.update(
                         {
                             name: data.name,
@@ -116,7 +118,10 @@ module.exports = async () => {
         await browser.close();
 
     } catch (error) {
-        console.log('Scrapper Error: ', error.messager)
+        console.log('Amazon Scrapper Error: ', error.messager)
     }
 
 }
+
+
+amazon()

@@ -28,7 +28,7 @@ module.exports = async () => {
         const numberOfPages = await page.$eval('.sc-fzqBkg.eERuQY .atual', div => {
             return parseInt(div.innerText.match(/(?<=\[).*?(?=])/gs)[0])
         })
-        console.log(`Total of pages for navigation: ${numberOfPages}`)
+        console.log('Total of pages for navigation: [%s]', numberOfPages)
         await page.goto(`https://www.kabum.com.br/hardware/${querySearch}?pagina=1`)
         await page.waitForSelector('.sc-fzozJi.dIEkef')
         console.log('Page loaded!')
@@ -118,7 +118,7 @@ module.exports = async () => {
         await browser.close()
 
     } catch (error) {
-        console.log('Scrapper Error: ', error.messager)
+        console.log('Kabum Scrapper Error: ', error.messager)
     }
 
 
