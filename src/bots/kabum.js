@@ -37,7 +37,6 @@ module.exports = async () => {
 
             console.log('There are [%s] links in page [%s]', links.length, j + 1)
 
-            console.log(links)
             for (let i = 0; i < links.length; i++) {
                 await page.goto(`https://www.kabum.com.br/hardware/${querySearch}?pagina=${j + 1}`)
                 await page.waitForSelector('.sc-fzozJi.dIEkef')

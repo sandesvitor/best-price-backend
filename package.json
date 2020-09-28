@@ -6,7 +6,6 @@
   "scripts": {
     "start": "node ./src/app.js",
     "dev": "nodemon ./src/app.js",
-    "build": "gulp",
     "migrate": "cd src/ && npx dotenv -e ../.env sequelize db:migrate",
     "migrate:undo": "cd src/ && npx dotenv -e ../.env sequelize db:migrate:undo",
     "migrate:undo:all": "cd src/ && npx dotenv -e ../.env sequelize db:migrate:undo"
