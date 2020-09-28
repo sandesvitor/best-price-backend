@@ -6,15 +6,13 @@ require('dotenv').config()
 require('../db/database/index')
 
 const runBots = async () => {
-    // await amazon()
-    // await kabum()
-    let randomNumber = Math.random() * 100
-    console.debug('RANDOM NUMBER: ', randomNumber)
+    await amazon()
+    await kabum()
 }
 
-nodeCron.schedule("* * * * * *", async () => {
+nodeCron.schedule("*/5 */1 * * *", async () => {
     console.log("START OF WEB SCRAPPING at: ", new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''))
-    runBots()
+    await runBots()
     console.log("END OF WEB SCRAPPING at: ", new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''))
 })
 
