@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon ./src/app.js",
-    "bot": "cd src/bots/ && npx dotenv -e ../../.env node botsRunner.js",
     "migrate": "cd src/ && npx dotenv -e ../.env sequelize db:migrate",
     "migrate:undo": "cd src/ && npx dotenv -e ../.env sequelize db:migrate:undo",
     "migrate:undo:all": "cd src/ && npx dotenv -e ../.env sequelize db:migrate:undo"

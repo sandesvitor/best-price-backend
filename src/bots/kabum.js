@@ -50,9 +50,11 @@ module.exports = async () => {
 
                 const product_sku = await page.$eval('[data-produto]', element => element.getAttribute('data-produto'))
 
-                const product_img = await page.$eval('.imagem_produto_descricao', element => element.getAttribute('src'))
+                const product_img = await page.$eval('#imagem-slide > li > img', element => element.getAttribute('src'))
+                    .catch(err => err.message)
 
                 const product_name = await page.$eval('#titulo_det', element => element.innerText)
+                    .catch(err => err.message)
 
                 const product_manufacturer = await page.$('.marcas meta')
                     ? await page.$eval('.marcas meta', element => element.getAttribute('content'))
@@ -82,8 +84,10 @@ module.exports = async () => {
                     }
                 )
                 if (!skuCheck) {
+                    console.debug(data)
                     await Product.create(data)
                 } else {
+                    console.debug(data)
                     await Product.update(
                         {
                             name: data.name,
