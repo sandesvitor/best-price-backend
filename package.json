@@ -1,0 +1,38 @@
+{
+  "name": "best-price-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon ./src/app.js",
+    "bot": "cd src/bots/ && npx dotenv -e ../../.env node botsRunner.js",
+    "migrate": "cd src/ && npx dotenv -e ../.env sequelize db:migrate",
+    "migrate:undo": "cd src/ && npx dotenv -e ../.env sequelize db:migrate:undo",
+    "migrate:undo:all": "cd src/ && npx dotenv -e ../.env sequelize db:migrate:undo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sandesvitor/best-price-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sandesvitor/best-price-backend/issues"
+  },
+  "homepage": "https://github.com/sandesvitor/best-price-backend#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "puppeteer": "4.0.0",
+    "pg": "^8.3.3",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.18.1"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^4.0.0",
+    "nodemon": "^2.0.4",
+    "sequelize-cli": "^6.2.0"
+  }
+}
