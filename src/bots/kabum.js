@@ -89,7 +89,7 @@ module.exports = async () => {
                 )
                 if (!skuCheck) {
                     console.debug(data)
-                    // await Product.create(data)
+                    await Product.create(data)
                 } else {
                     console.debug(data)
                     await Product.update(
