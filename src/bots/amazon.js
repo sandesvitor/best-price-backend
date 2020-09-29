@@ -1,7 +1,10 @@
 const puppeteer = require('puppeteer')
+const chalk = require('chalk')
 const Product = require('../db/models/Product')
 require('../db/database/index')
 
+const error = chalk.bold.red
+const success = chalk.keyword("green")
 
 module.exports = async () => {
 
@@ -18,13 +21,13 @@ module.exports = async () => {
         const page = await browser.newPage()
         page.setDefaultNavigationTimeout(60000)
         page.setDefaultTimeout(60000)
-        // page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36')
+        page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36')
 
-        await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=1`)
+        await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=1`, { waitUntil: 'domcontentloaded' })
         console.log('Awaiting for page to load...')
 
         await page.waitForSelector('.a-link-normal.s-no-outline')
-        console.log('Page loaded!')
+        console.log(success('Page loaded!'))
 
         const numberOfPages = await page.$$eval('.a-pagination li', li => {
             return parseInt(li[li.length - 2].innerText)
@@ -118,9 +121,12 @@ module.exports = async () => {
 
 
         await browser.close();
+        console.log(success('Browser closed!'))
 
-    } catch (error) {
-        console.log('Amazon Scrapper Error: ', error)
+    } catch (err) {
+        console.log('Amazon Scrapper Error: ', error(err))
+        await browser.close();
+        console.log(error('Browser closed!'))
     }
 
 }

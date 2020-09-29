@@ -1,7 +1,10 @@
 const puppeteer = require('puppeteer')
+const chalk = require('chalk')
 const Product = require('../db/models/Product')
 require('../db/database/index')
 
+const error = chalk.bold.red
+const success = chalk.keyword("green")
 
 module.exports = async () => {
 
@@ -22,6 +25,7 @@ module.exports = async () => {
         console.log('Awaiting page to load...')
 
         await page.waitForSelector('.sc-fzozJi.dIEkef')
+        console.log(success('Page loaded!'))
         console.log('Caching total number of pages')
 
         await page.$eval('.sc-fzolEj.fblIKl', div => div.click())
@@ -118,10 +122,13 @@ module.exports = async () => {
             }
         }
 
-        await browser.close()
+        await browser.close();
+        console.log(success('Browser closed!'))
 
-    } catch (error) {
-        console.log('Kabum Scrapper Error: ', error.messager)
+    } catch (err) {
+        console.log('Kabum Scrapper Error: ', error(err))
+        await browser.close();
+        console.log(error('Browser closed!'))
     }
 
 
