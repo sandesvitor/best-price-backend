@@ -3,10 +3,10 @@ const Product = require('../db/models/Product')
 require('../db/database/index')
 
 
-module.exports = async () => {
+const amazon = async () => {
 
     try {
-        console.log('<<<< KABUM SCRAPPING >>>>')
+        console.log('<<<< AMAZON SCRAPPING >>>>')
         const querySearch = 'placa+mae'
 
         var browser = await puppeteer.launch({
@@ -33,7 +33,7 @@ module.exports = async () => {
 
         for (let j = 0; j < numberOfPages; j++) {
 
-            await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=${j + 1}`)
+            await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=${j + 1}`, { waitUntil: 'domcontentloaded' })
             await page.waitForSelector('.a-link-normal.s-no-outline')
             const links = await page.$$('.a-link-normal.s-no-outline')
 
@@ -64,7 +64,14 @@ module.exports = async () => {
                     : "Sem fabricante definido"
 
                 const product_price = await page.$('#price_inside_buybox')
-                    ? await page.$eval('#price_inside_buybox', element => element.innerText)
+                    ? await page.$eval('#price_inside_buybox', element => {
+                        return parseFloat(element.innerText
+                            .match(/[^.\$]?([0-9]{1,3}.([0-9]{3}.)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$/g)[0]
+                            .replace(/\s/g, '')
+                            .replace('.', '')
+                            .replace(',', '.')
+                        )
+                    })
                     : "Sem preço no momento"
 
                 const product_link = await page.evaluate(() => location.href)
@@ -88,11 +95,11 @@ module.exports = async () => {
 
                 if (!skuCheck) {
                     console.info('New Product!\nStoring product on database...')
-                    // console.info(data)
+                    console.info(data)
                     await Product.create(data)
                 } else {
                     console.info('Product alread listed!\nUpdating...')
-                    // console.info(data)
+                    console.info(data)
                     await Product.update(
                         {
                             name: data.name,
@@ -127,3 +134,5 @@ module.exports = async () => {
     }
 
 }
+
+module.exports = amazon

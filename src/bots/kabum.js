@@ -3,10 +3,10 @@ const Product = require('../db/models/Product')
 require('../db/database/index')
 
 
-module.exports = async () => {
+const kabum = async () => {
 
     try {
-        console.log('<<<< AMAZON SCRAPPING >>>>')
+        console.log('<<<< KABUM SCRAPPING >>>>')
         const querySearch = 'placas-mae'
 
         var browser = await puppeteer.launch({
@@ -69,7 +69,14 @@ module.exports = async () => {
                     : "Sem fabricante definido"
 
                 const product_price = await page.$('.preco_normal')
-                    ? await page.$eval('.preco_normal', element => element.innerText)
+                    ? await page.$eval('.preco_normal', element => {
+                        return parseFloat(element.innerText
+                            .match(/[^.\$]?([0-9]{1,3}.([0-9]{3}.)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$/g)[0]
+                            .replace(/\s/g, '')
+                            .replace('.', '')
+                            .replace(',', '.')
+                        )
+                    })
                     : "Sem preço no momento"
 
                 const product_link = await page.evaluate(() => location.href)
@@ -92,11 +99,11 @@ module.exports = async () => {
                 )
                 if (!skuCheck) {
                     console.info('New Product!\nStoring product on database...')
-                    // console.info(data)
+                    console.info(data)
                     await Product.create(data)
                 } else {
                     console.info('Product alread listed!\nUpdating...')
-                    // console.info(data)
+                    console.info(data)
                     await Product.update(
                         {
                             name: data.name,
@@ -128,7 +135,6 @@ module.exports = async () => {
         await browser.close();
         console.log('Browser closed!')
     }
-
-
-
 }
+
+module.exports = kabum

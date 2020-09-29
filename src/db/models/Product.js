@@ -8,7 +8,7 @@ class Product extends Model {
             code: DataTypes.STRING,
             name: DataTypes.STRING,
             manufacturer: DataTypes.STRING,
-            price: DataTypes.STRING,
+            price: DataTypes.FLOAT,
             link: DataTypes.STRING,
             imageUrl: DataTypes.STRING
 
