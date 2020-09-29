@@ -6,7 +6,7 @@ require('dotenv').config()
 require('../db/database/index')
 
 
-nodeCron.schedule("16 22 * * *", async () => {
+nodeCron.schedule("30 22 * * *", async () => {
     console.log("START OF WEB SCRAPPING at: ", new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''))
 
     await amazon()

@@ -18,7 +18,7 @@ module.exports = {
     async show(req, res) {
         try {
             const id = req.params.id
-            console.log(id)
+            console.log('Trying to GET Product BY ID [%s]', id)
 
             const product = await Product.findByPk(id)
 
