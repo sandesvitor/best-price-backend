@@ -41,7 +41,7 @@ module.exports = async () => {
 
             for (let i = 0; i < links.length; i++) {
 
-                await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=${j + 1}`);
+                await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=${j + 1}`, { waitUntil: 'domcontentloaded' });
                 await page.waitForSelector('.a-size-base-plus.a-color-base.a-text-normal')
                 await page.$$('.a-size-base-plus.a-color-base.a-text-normal')
                     .then(link => link[i].click())
@@ -88,26 +88,26 @@ module.exports = async () => {
 
                 if (!skuCheck) {
                     console.info('New Product!\nStoring product on database...')
-                    console.info(data)
-                    // await Product.create(data)
+                    // console.info(data)
+                    await Product.create(data)
                 } else {
                     console.info('Product alread listed!\nUpdating...')
-                    console.info(data)
-                    //     await Product.update(
-                    //         {
-                    //             name: data.name,
-                    //             manufacturer: data.manufacturer,
-                    //             price: data.price,
-                    //             link: data.link,
-                    //             imageUrl: data.imageUrl
-                    //         },
-                    //         {
-                    //             where: {
-                    //                 retailer: 'Amazon',
-                    //                 id: skuCheck.id
-                    //             }
-                    //         }
-                    //     )
+                    // console.info(data)
+                    await Product.update(
+                        {
+                            name: data.name,
+                            manufacturer: data.manufacturer,
+                            price: data.price,
+                            link: data.link,
+                            imageUrl: data.imageUrl
+                        },
+                        {
+                            where: {
+                                retailer: 'Amazon',
+                                id: skuCheck.id
+                            }
+                        }
+                    )
                 }
                 console.debug('Storage completed!')
 
