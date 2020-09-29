@@ -6,6 +6,7 @@ require('../db/database/index')
 module.exports = async () => {
 
     try {
+        console.log('<<<< AMAZON SCRAPPING >>>>')
         const querySearch = 'placas-mae'
 
         var browser = await puppeteer.launch({
@@ -91,11 +92,11 @@ module.exports = async () => {
                 )
                 if (!skuCheck) {
                     console.info('New Product!\nStoring product on database...')
-                    console.info(data)
+                    // console.info(data)
                     await Product.create(data)
                 } else {
                     console.info('Product alread listed!\nUpdating...')
-                    console.info(data)
+                    // console.info(data)
                     await Product.update(
                         {
                             name: data.name,

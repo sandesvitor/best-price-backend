@@ -6,13 +6,13 @@ require('../db/database/index')
 module.exports = async () => {
 
     try {
+        console.log('<<<< KABUM SCRAPPING >>>>')
         const querySearch = 'placa+mae'
 
         var browser = await puppeteer.launch({
             headless: true,
             args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox'
+                '--no-sandbox'
             ]
         })
         const page = await browser.newPage()
@@ -33,7 +33,7 @@ module.exports = async () => {
 
         for (let j = 0; j < numberOfPages; j++) {
 
-            await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=${j + 1}`, { waitUntil: 'domcontentloaded' })
+            await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=${j + 1}`)
             await page.waitForSelector('.a-link-normal.s-no-outline')
             const links = await page.$$('.a-link-normal.s-no-outline')
 
