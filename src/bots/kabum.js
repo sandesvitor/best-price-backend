@@ -1,17 +1,14 @@
 const puppeteer = require('puppeteer')
-const chalk = require('chalk')
 const Product = require('../db/models/Product')
 require('../db/database/index')
 
-const error = chalk.bold.red
-const success = chalk.keyword("green")
 
 module.exports = async () => {
 
     try {
         const querySearch = 'placas-mae'
 
-        const browser = await puppeteer.launch({
+        var browser = await puppeteer.launch({
             headless: true,
             args: [
                 '--no-sandbox',
@@ -123,12 +120,12 @@ module.exports = async () => {
         }
 
         await browser.close();
-        console.log(success('Browser closed!'))
+        console.log('Browser closed!')
 
     } catch (err) {
-        console.log('Kabum Scrapper Error: ', error(err))
+        console.log('Kabum Scrapper Error: ', err.message)
         await browser.close();
-        console.log(error('Browser closed!'))
+        console.log('Browser closed!')
     }
 
 

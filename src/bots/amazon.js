@@ -1,17 +1,14 @@
 const puppeteer = require('puppeteer')
-const chalk = require('chalk')
 const Product = require('../db/models/Product')
 require('../db/database/index')
 
-const error = chalk.bold.red
-const success = chalk.keyword("green")
 
 module.exports = async () => {
 
     try {
         const querySearch = 'placa+mae'
 
-        const browser = await puppeteer.launch({
+        var browser = await puppeteer.launch({
             headless: true,
             args: [
                 '--no-sandbox',
@@ -27,7 +24,7 @@ module.exports = async () => {
         console.log('Awaiting for page to load...')
 
         await page.waitForSelector('.a-link-normal.s-no-outline')
-        console.log(success('Page loaded!'))
+        console.log('Page loaded!')
 
         const numberOfPages = await page.$$eval('.a-pagination li', li => {
             return parseInt(li[li.length - 2].innerText)
@@ -36,7 +33,7 @@ module.exports = async () => {
 
         for (let j = 0; j < numberOfPages; j++) {
 
-            await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=${j + 1}`, { waitUntil: 'domcontentloaded' })
+            await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=${j + 1}`)
             await page.waitForSelector('.a-link-normal.s-no-outline')
             const links = await page.$$('.a-link-normal.s-no-outline')
 
@@ -44,7 +41,7 @@ module.exports = async () => {
 
             for (let i = 0; i < links.length; i++) {
 
-                await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=${j + 1}`, { waitUntil: 'domcontentloaded' });
+                await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=${j + 1}`);
                 await page.waitForSelector('.a-size-base-plus.a-color-base.a-text-normal')
                 await page.$$('.a-size-base-plus.a-color-base.a-text-normal')
                     .then(link => link[i].click())
@@ -121,12 +118,12 @@ module.exports = async () => {
 
 
         await browser.close();
-        console.log(success('Browser closed!'))
+        console.log('Browser closed!')
 
     } catch (err) {
-        console.log('Amazon Scrapper Error: ', error(err))
+        console.log('Amazon Scrapper Error: ', err.message)
         await browser.close();
-        console.log(error('Browser closed!'))
+        console.log('Browser closed!')
     }
 
 }
