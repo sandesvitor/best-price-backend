@@ -14,5 +14,3 @@ nodeCron.schedule("16 22 * * *", async () => {
 
     console.log("END OF WEB SCRAPPING at: ", new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''))
 })
-
-runBots()
