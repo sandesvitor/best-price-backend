@@ -22,7 +22,7 @@ module.exports = async () => {
         console.log('Awaiting page to load...')
 
         await page.waitForSelector('.sc-fzozJi.dIEkef')
-        console.log(success('Page loaded!'))
+        console.log('Page loaded!')
         console.log('Caching total number of pages')
 
         await page.$eval('.sc-fzolEj.fblIKl', div => div.click())
