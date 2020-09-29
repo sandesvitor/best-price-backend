@@ -2,11 +2,12 @@ const puppeteer = require('puppeteer')
 const Product = require('../db/models/Product')
 require('../db/database/index')
 
-let querySearch = 'placas-mae'
 
 module.exports = async () => {
 
     try {
+        const querySearch = 'placas-mae'
+
         const browser = await puppeteer.launch({
             headless: true,
             args: [
