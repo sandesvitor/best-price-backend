@@ -1,9 +1,10 @@
 const puppeteer = require('puppeteer')
 const Product = require('../db/models/Product')
+require('../db/database/index')
 
 let querySearch = 'placa+mae'
 
-const amazon = async () => {
+module.exports = async () => {
 
     try {
         const browser = await puppeteer.launch({
@@ -45,7 +46,7 @@ const amazon = async () => {
                     .then(link => link[i].click())
                     .catch(console.log)
 
-                console.log(`Beginning scrapping of link ${i + 1} of page ${j + 1}...`)
+                console.log('Beginning scrapping of link [%s] of page [%s]...', i + 1, j + 1)
 
                 await page.waitForSelector('#productTitle')
 
@@ -78,18 +79,18 @@ const amazon = async () => {
                     imageUrl: product_img
                 }
 
-
                 const skuCheck = await Product.findOne(
                     {
                         where: { code: data.code }
                     }
                 )
+
                 if (!skuCheck) {
-                    console.info()
+                    console.info('New Product!\nStoring product on database...')
                     console.info(data)
                     await Product.create(data)
                 } else {
-                    console.info('New Product!\nStoring product on database:')
+                    console.info('Product alread listed!\nUpdating...')
                     console.info(data)
                     await Product.update(
                         {
@@ -109,7 +110,7 @@ const amazon = async () => {
                 }
                 console.debug('Storage completed!')
 
-                console.log(`Scrapping completed on link ${i + 1} of page ${j + 1}...`)
+                console.log('Scrapping completed for link [%s] of page [%s]...', i + 1, j + 1)
             }
 
         }
@@ -118,10 +119,7 @@ const amazon = async () => {
         await browser.close();
 
     } catch (error) {
-        console.log('Amazon Scrapper Error: ', error.messager)
+        console.log('Amazon Scrapper Error: ', error)
     }
 
 }
-
-
-amazon()

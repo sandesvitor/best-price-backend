@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer')
 const Product = require('../db/models/Product')
+require('../db/database/index')
 
 let querySearch = 'placas-mae'
 
@@ -48,7 +49,7 @@ module.exports = async () => {
                     .catch(console.log)
 
 
-                console.log(`Beginning scrapping of link ${i + 1} of page ${j + 1}...`)
+                console.log('Beginning scrapping of link [%s] of page [%s]...', i + 1, j + 1)
 
                 await page.waitForSelector('#titulo_det')
 
@@ -70,7 +71,6 @@ module.exports = async () => {
 
                 const product_link = await page.evaluate(() => location.href)
 
-                console.debug('Storing product on database')
                 const data = {
                     retailer: 'Kabum',
                     code: product_sku,
@@ -88,10 +88,12 @@ module.exports = async () => {
                     }
                 )
                 if (!skuCheck) {
-                    console.debug(data)
+                    console.info('New Product!\nStoring product on database...')
+                    console.info(data)
                     await Product.create(data)
                 } else {
-                    console.debug(data)
+                    console.info('Product alread listed!\nUpdating...')
+                    console.info(data)
                     await Product.update(
                         {
                             name: data.name,
@@ -110,7 +112,7 @@ module.exports = async () => {
                 }
                 console.debug('Storage completed!')
 
-                console.log(`Scrapping completed on link ${i + 1} of page ${j + 1}...`)
+                console.log('Scrapping completed for link [%s] of page [%s]...', i + 1, j + 1)
 
             }
         }
