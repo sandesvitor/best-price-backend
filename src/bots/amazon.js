@@ -20,7 +20,8 @@ const amazon = async () => {
         page.setDefaultTimeout(60000)
         page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36')
 
-        await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&i=computers&page=1&ref=sr_pg_1`, { waitUntil: 'domcontentloaded' })
+        // Query string usando produtos novos, da seção de computadores e com classificação maior do que 1 estrela:     
+        await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&i=computers&rh=p_n_condition-type%3A13862762011%2Cp_72%3A17833783011&page=1&ref=sr_nr_p_72_1_pg_1`, { waitUntil: 'domcontentloaded' })
         console.log('Awaiting for page to load...')
 
         await page.waitForSelector('.a-link-normal.s-no-outline')
@@ -33,7 +34,7 @@ const amazon = async () => {
 
         for (let j = 0; j < numberOfPages; j++) {
 
-            await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&i=computers&page=${j + 1}&ref=sr_pg_${j + 1}`)
+            await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&i=computers&rh=p_n_condition-type%3A13862762011%2Cp_72%3A17833783011&page=${j + 1}&ref=sr_nr_p_72_1_pg_${j + 1}`)
             await page.waitForSelector('.a-link-normal.s-no-outline')
             const links = await page.$$('.a-link-normal.s-no-outline')
 
@@ -41,15 +42,26 @@ const amazon = async () => {
 
             for (let i = 0; i < links.length; i++) {
 
-                await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&i=computers&page=${j + 1}&ref=sr_pg_${j + 1}`);
+                await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&i=computers&rh=p_n_condition-type%3A13862762011%2Cp_72%3A17833783011&page=${j + 1}&ref=sr_nr_p_72_1_pg_${j + 1}`);
                 await page.waitForSelector('.a-size-base-plus.a-color-base.a-text-normal')
                 await page.$$('.a-size-base-plus.a-color-base.a-text-normal')
                     .then(link => link[i].click())
                     .catch(console.log)
 
-                console.log('Beginning scrapping of link [%s] of page [%s]...', i + 1, j + 1)
 
-                await page.waitForSelector('#productTitle')
+                const isSelector = await page.waitForSelector('#productTitle')
+                    .then(() => {
+                        console.log('Link loaded!')
+                        return true
+                    })
+                    .catch(() => {
+                        console.log('Selector "#productTitle" timeout...\nTrying next link: [%s]', i + 1)
+                        return false
+                    })
+
+                if (!isSelector) continue
+
+                console.log('Beginning scrapping of link [%s] of page [%s]...', i + 1, j + 1)
 
                 const product_sku = await page.$eval('#ASIN', element => element.value)
 

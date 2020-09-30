@@ -52,9 +52,19 @@ const kabum = async () => {
                     .catch(console.log)
 
 
-                console.log('Beginning scrapping of link [%s] of page [%s]...', i + 1, j + 1)
+                const isSelector = await page.waitForSelector('#titulo_det')
+                    .then(() => {
+                        console.log('Link loaded!')
+                        return true
+                    })
+                    .catch(() => {
+                        console.log('Selector "#titulo_det" timeout...\nTrying next link: [%s]', i + 1)
+                        return false
+                    })
 
-                await page.waitForSelector('#titulo_det')
+                if (!isSelector) continue
+
+                console.log('Beginning scrapping of link [%s] of page [%s]...', i + 1, j + 1)
 
                 const product_sku = await page.$eval('[data-produto]', element => element.getAttribute('data-produto'))
 

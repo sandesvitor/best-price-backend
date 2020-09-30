@@ -5,13 +5,14 @@ const nodeCron = require('node-cron')
 require('dotenv').config()
 require('../db/database/index')
 
-// const runner = async () => {
+const runner = async () => {
+    // await amazon()
+    // await kabum()
+    console.log('Production >>>')
+}
+runner()
+
+// nodeCron.schedule("0 5 * * *", async () => {
 //     await amazon()
 //     await kabum()
-// }
-// runner()
-
-nodeCron.schedule("0 5 * * *", async () => {
-    await amazon()
-    await kabum()
-})
+// })
