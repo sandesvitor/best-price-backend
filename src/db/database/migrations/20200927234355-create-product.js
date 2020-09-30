@@ -19,7 +19,7 @@ module.exports = {
         allowNull: false
       },
       name: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(1234),
         allowNull: false
       },
       manufacturer: {
@@ -28,14 +28,14 @@ module.exports = {
       },
       price: {
         type: Sequelize.FLOAT,
-        allowNull: false
+        allowNull: true
       },
       link: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(1234),
         allowNull: false
       },
       imageUrl: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(1234),
         allowNull: false
       },
       createdAt: {

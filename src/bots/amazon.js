@@ -20,7 +20,7 @@ const amazon = async () => {
         page.setDefaultTimeout(60000)
         page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36')
 
-        await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=1`, { waitUntil: 'domcontentloaded' })
+        await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&i=computers&page=1&ref=sr_pg_1`, { waitUntil: 'domcontentloaded' })
         console.log('Awaiting for page to load...')
 
         await page.waitForSelector('.a-link-normal.s-no-outline')
@@ -33,7 +33,7 @@ const amazon = async () => {
 
         for (let j = 0; j < numberOfPages; j++) {
 
-            await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=${j + 1}`, { waitUntil: 'domcontentloaded' })
+            await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&i=computers&page=${j + 1}&ref=sr_pg_${j + 1}`)
             await page.waitForSelector('.a-link-normal.s-no-outline')
             const links = await page.$$('.a-link-normal.s-no-outline')
 
@@ -41,7 +41,7 @@ const amazon = async () => {
 
             for (let i = 0; i < links.length; i++) {
 
-                await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&page=${j + 1}`, { waitUntil: 'domcontentloaded' });
+                await page.goto(`https://www.amazon.com.br/s?k=${querySearch}&i=computers&page=${j + 1}&ref=sr_pg_${j + 1}`);
                 await page.waitForSelector('.a-size-base-plus.a-color-base.a-text-normal')
                 await page.$$('.a-size-base-plus.a-color-base.a-text-normal')
                     .then(link => link[i].click())
@@ -63,8 +63,8 @@ const amazon = async () => {
                     ? await page.$eval('#bylineInfo', element => element.innerText)
                     : "Sem fabricante definido"
 
-                const product_price = await page.$('#price_inside_buybox')
-                    ? await page.$eval('#price_inside_buybox', element => {
+                const product_price = await page.$('#price_inside_buybox' || '.preco_desconto-cm')
+                    ? await page.$eval('#price_inside_buybox' || '.preco_desconto-cm', element => {
                         return parseFloat(element.innerText
                             .match(/[^.\$]?([0-9]{1,3}.([0-9]{3}.)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$/g)[0]
                             .replace(/\s/g, '')
@@ -72,7 +72,7 @@ const amazon = async () => {
                             .replace(',', '.')
                         )
                     })
-                    : "Sem preço no momento"
+                    : null
 
                 const product_link = await page.evaluate(() => location.href)
 

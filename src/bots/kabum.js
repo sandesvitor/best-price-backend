@@ -77,7 +77,7 @@ const kabum = async () => {
                             .replace(',', '.')
                         )
                     })
-                    : "Sem preço no momento"
+                    : null
 
                 const product_link = await page.evaluate(() => location.href)
 

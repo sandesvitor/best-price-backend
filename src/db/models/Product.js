@@ -6,11 +6,11 @@ class Product extends Model {
         super.init({
             retailer: DataTypes.STRING,
             code: DataTypes.STRING,
-            name: DataTypes.STRING,
+            name: DataTypes.STRING(1234),
             manufacturer: DataTypes.STRING,
             price: DataTypes.FLOAT,
-            link: DataTypes.STRING,
-            imageUrl: DataTypes.STRING
+            link: DataTypes.STRING(1234),
+            imageUrl: DataTypes.STRING(1234)
 
         }, {
             sequelize: connection,
