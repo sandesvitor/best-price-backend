@@ -87,7 +87,18 @@ const kabum = async () => {
                     })
                     : null
 
-                const product_price = await page.$eval('.preco_normal' || '.preco_desconto-cm span', element => {
+                const priceClass = await page.$('.preco_normal')
+                    .then(res => {
+                        if (res !== null) {
+                            return '.preco_normal'
+                        } else {
+                            return '.preco_desconto-cm span'
+                        }
+                    })
+                    .catch(() => null)
+                console.debug("Class of product: ", priceClass)
+
+                const product_price = await page.$eval(priceClass, element => {
                     return parseFloat(element.innerText
                         .match(/[^.\$]?([0-9]{1,3}.([0-9]{3}.)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$/g)[0]
                         .replace(/\s/g, '')
