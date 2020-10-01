@@ -6,7 +6,7 @@ require('dotenv').config()
 require('../db/database/index')
 
 const runner = async () => {
-    // await amazon()
+    await amazon()
     await kabum()
 }
 runner()
