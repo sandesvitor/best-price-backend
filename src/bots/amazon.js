@@ -65,7 +65,7 @@ const amazon = async () => {
 
                 const product_sku = await page.$eval('#ASIN', element => element.value)
 
-                const product_img = await page.$eval('#landingImage', element => element.dataset.oldHires)
+                const product_img = await page.$eval('#imgTagWrapperId > img', element => element.dataset.oldHires)
                     .catch(err => err.message)
 
                 const product_name = await page.$eval('#productTitle', element => element.innerText)
@@ -73,7 +73,7 @@ const amazon = async () => {
 
                 const product_manufacturer = await page.$('#bylineInfo')
                     ? await page.$eval('#bylineInfo', element => element.innerText)
-                    : "Sem fabricante definido"
+                    : null
 
                 const product_price = await page.$('#price_inside_buybox' || '.preco_desconto-cm')
                     ? await page.$eval('#price_inside_buybox' || '.preco_desconto-cm', element => {
@@ -86,6 +86,9 @@ const amazon = async () => {
                     })
                     : null
 
+                const product_stars = await page.$eval('.a-icon.a-icon-star', element => element.className.replace('a-icon a-icon-star a-star-', '').replace('-', '.'))
+                    .catch(() => null)
+
                 const product_link = await page.evaluate(() => location.href)
 
 
@@ -95,6 +98,7 @@ const amazon = async () => {
                     name: product_name,
                     manufacturer: product_manufacturer,
                     price: product_price,
+                    stars: product_stars,
                     link: product_link,
                     imageUrl: product_img
                 }
@@ -117,6 +121,7 @@ const amazon = async () => {
                             name: data.name,
                             manufacturer: data.manufacturer,
                             price: data.price,
+                            stars: data.stars,
                             link: data.link,
                             imageUrl: data.imageUrl
                         },

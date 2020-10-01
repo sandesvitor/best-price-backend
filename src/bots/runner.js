@@ -7,8 +7,7 @@ require('../db/database/index')
 
 const runner = async () => {
     // await amazon()
-    // await kabum()
-    console.log('Production >>>')
+    await kabum()
 }
 runner()
 
