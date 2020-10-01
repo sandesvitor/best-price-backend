@@ -66,7 +66,13 @@ const kabum = async () => {
 
                 console.log('Beginning scrapping of link [%s] of page [%s]...', i + 1, j + 1)
 
-                const product_sku = await page.$eval('[data-produto]', element => element.getAttribute('data-produto'))
+                const product_sku = await page.$eval('.links_det > span', element => element.innerText)
+                    .catch(() => {
+                        console.log('Product SKU IS NULL\nTrying next link: [%s]', i + 1)
+                        return null
+                    })
+
+                if (product_sku === null) continue
 
                 const product_img = await page.$eval('#imagem-slide > li > img', element => element.getAttribute('src'))
                     .catch(err => err.message)
@@ -74,20 +80,24 @@ const kabum = async () => {
                 const product_name = await page.$eval('#titulo_det', element => element.innerText)
                     .catch(err => err.message)
 
-                const product_manufacturer = await page.$('.marcas meta')
-                    ? await page.$eval('.marcas meta', element => element.getAttribute('content'))
-                    : "Sem fabricante definido"
-
-                const product_price = await page.$('.preco_normal')
-                    ? await page.$eval('.preco_normal', element => {
-                        return parseFloat(element.innerText
-                            .match(/[^.\$]?([0-9]{1,3}.([0-9]{3}.)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$/g)[0]
-                            .replace(/\s/g, '')
-                            .replace('.', '')
-                            .replace(',', '.')
-                        )
+                const product_manufacturer = await page.$('.boxs img')
+                    ? await page.$eval('.boxs img', element => {
+                        let logo = element.title.split(' ')
+                        return logo[logo.length - 1]
                     })
                     : null
+
+                const product_price = await page.$eval('.preco_normal' || '.preco_desconto-cm span', element => {
+                    return parseFloat(element.innerText
+                        .match(/[^.\$]?([0-9]{1,3}.([0-9]{3}.)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$/g)[0]
+                        .replace(/\s/g, '')
+                        .replace('.', '')
+                        .replace(',', '.')
+                    )
+                }).catch(() => null)
+
+                const product_stars = await page.$eval('.H-estrelas', element => element.className.replace('H-estrelas e', ''))
+                    .catch(() => null)
 
                 const product_link = await page.evaluate(() => location.href)
 
@@ -97,6 +107,7 @@ const kabum = async () => {
                     name: product_name,
                     manufacturer: product_manufacturer,
                     price: product_price,
+                    stars: product_stars,
                     link: product_link,
                     imageUrl: product_img
                 }
@@ -119,6 +130,7 @@ const kabum = async () => {
                             name: data.name,
                             manufacturer: data.manufacturer,
                             price: data.price,
+                            stars: data.stars,
                             link: data.link,
                             imageUrl: data.imageUrl
                         },

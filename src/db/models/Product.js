@@ -9,6 +9,7 @@ class Product extends Model {
             name: DataTypes.STRING(1234),
             manufacturer: DataTypes.STRING,
             price: DataTypes.FLOAT,
+            stars: DataTypes.STRING,
             link: DataTypes.STRING(1234),
             imageUrl: DataTypes.STRING(1234)
 

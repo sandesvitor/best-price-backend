@@ -24,10 +24,14 @@ module.exports = {
       },
       manufacturer: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       price: {
         type: Sequelize.FLOAT,
+        allowNull: true
+      },
+      stars: {
+        type: Sequelize.STRING,
         allowNull: true
       },
       link: {
