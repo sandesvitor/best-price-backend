@@ -44,16 +44,20 @@ module.exports = {
             const orderByPrice = req.query.ob_p
                 ? req.query.ob_p
                 : 'DESC'
-            // const rating = req.query.sr
+
+            const rating = req.query.sr
+                ? req.query.sr
+                : 4
 
             const queryHash = {
-                limit: paginationLimit,
+                limit: parseInt(paginationLimit),
                 order: [['price', orderByPrice === '1' ? 'ASC' : 'DESC']],
                 where: {
 
                     manufacturer: { [Op.and]: [manufacturers] },
                     price: { [Op.lte]: maxPrice },
-                    retailer: { [Op.and]: [retailers] }
+                    retailer: { [Op.and]: [retailers] },
+                    stars: { [Op.gte]: rating }
                 }
             }
 

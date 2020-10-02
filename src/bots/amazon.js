@@ -86,7 +86,7 @@ const amazon = async () => {
                     })
                     : null
 
-                const product_stars = await page.$eval('.a-icon.a-icon-star', element => element.className.replace('a-icon a-icon-star a-star-', '').replace('-', '.'))
+                const product_stars = await page.$eval('.a-icon.a-icon-star', element => parseFloat(element.className.replace('a-icon a-icon-star a-star-', '').replace('-', '.')))
                     .catch(() => null)
 
                 const product_link = await page.evaluate(() => location.href)
