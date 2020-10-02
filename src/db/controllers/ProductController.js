@@ -1,11 +1,38 @@
 const Product = require('../models/Product')
+const { Op } = require('sequelize')
 
 module.exports = {
 
     async index(req, res) {
         try {
             console.log('Trying to GET LIST of Products!')
-            const products = await Product.findAll()
+            const manufacturers = req.query.mn
+            const maxPrice = req.query.mp
+            const retailers = req.query.rt
+            const paginationLimit = req.query.pl
+            const orderByPrice = req.query.ob_d ? 'ASC' : 'DESC'
+            // const rating = req.query.sr
+
+            const products = await Product.findAll({
+                limit: paginationLimit,
+                order: [
+                    ['price', `${orderByPrice}`]
+                ],
+                where: {
+                    manufacturer: {
+                        [Op.and]: [manufacturers]
+                    },
+                    price: {
+                        [Op.lte]: maxPrice
+                    },
+                    retailer: {
+                        [Op.and]: [retailers]
+                    }
+                }
+
+            })
+            console.log('\nQuery data from req.query:')
+            console.log(req.query)
 
             return res.status(200).json(products)
 
@@ -17,12 +44,11 @@ module.exports = {
 
     async show(req, res) {
         try {
-            const id = req.params.id
-            console.log('Trying to GET Product BY ID [%s]', id)
+            console.log('Trying to GET max Price Value in PRODUCTS TABLE')
 
-            const product = await Product.findByPk(id)
+            const maxPrice = await Product.max('price')
 
-            return res.status(200).json(product)
+            return res.status(200).json(maxPrice)
 
         } catch (ex) {
             console.log('Error: ', ex.message)
