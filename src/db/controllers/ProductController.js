@@ -41,8 +41,8 @@ module.exports = {
                 ? req.query.pl
                 : '30'
 
-            const orderByPrice = req.query.ob_d
-                ? req.query.ob_d
+            const orderByPrice = req.query.ob_p
+                ? req.query.ob_p
                 : 'DESC'
             // const rating = req.query.sr
 
