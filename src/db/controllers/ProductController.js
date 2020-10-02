@@ -7,32 +7,28 @@ module.exports = {
         try {
             console.log('Trying to GET LIST of Products!')
             const manufacturers = req.query.mn
-            const maxPrice = req.query.mp
+            const maxPrice = parseFloat(req.query.mp)
             const retailers = req.query.rt
             const paginationLimit = req.query.pl
-            const orderByPrice = req.query.ob_d ? 'ASC' : 'DESC'
+            const orderByPrice = req.query.ob_d
             // const rating = req.query.sr
 
-            const products = await Product.findAll({
+            const queryHash = {
                 limit: paginationLimit,
-                order: [
-                    ['price', `${orderByPrice}`]
-                ],
+                order: [['price', orderByPrice === '1' ? 'ASC' : 'DESC']],
                 where: {
-                    manufacturer: {
-                        [Op.and]: [manufacturers]
-                    },
-                    price: {
-                        [Op.lte]: maxPrice
-                    },
-                    retailer: {
-                        [Op.and]: [retailers]
-                    }
-                }
 
-            })
-            console.log('\nQuery data from req.query:')
-            console.log(req.query)
+                    manufacturer: { [Op.and]: [manufacturers] },
+                    price: { [Op.lte]: maxPrice },
+                    retailer: { [Op.and]: [retailers] }
+                }
+            }
+
+            const products = await Product.findAll(queryHash)
+            console.info('\nQuery data from req.query:')
+            console.info(req.query)
+            console.info('\nQuery Parsed from Hash:')
+            console.info(queryHash)
 
             return res.status(200).json(products)
 
@@ -42,7 +38,7 @@ module.exports = {
         }
     },
 
-    async show(req, res) {
+    async getHigherPrice(req, res) {
         try {
             console.log('Trying to GET max Price Value in PRODUCTS TABLE')
 
