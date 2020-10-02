@@ -31,7 +31,7 @@ module.exports = {
         allowNull: true
       },
       stars: {
-        type: Sequelize.STRING,
+        type: Sequelize.FLOAT,
         allowNull: true
       },
       link: {

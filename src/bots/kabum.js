@@ -107,7 +107,7 @@ const kabum = async () => {
                     )
                 }).catch(() => null)
 
-                const product_stars = await page.$eval('.H-estrelas', element => element.className.replace('H-estrelas e', ''))
+                const product_stars = await page.$eval('.H-estrelas', element => parseFloat(element.className.replace('H-estrelas e', '')))
                     .catch(() => null)
 
                 const product_link = await page.evaluate(() => location.href)
