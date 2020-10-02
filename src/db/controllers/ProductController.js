@@ -69,13 +69,34 @@ module.exports = {
         }
     },
 
-    async getHigherPrice(req, res) {
+    async getMetaValues(req, res) {
         try {
-            console.log('Trying to GET max Price Value in PRODUCTS TABLE')
+            const metaValue = req.params.key
+            if (metaValue === 'max') {
+                console.log('Trying to GET max Price Value in PRODUCTS TABLE')
 
-            const maxPrice = await Product.max('price')
+                const maxPrice = await Product.max('price')
 
-            return res.status(200).json(maxPrice)
+                return res.status(200).json(maxPrice)
+            } else if (metaValue === 'man') {
+                console.log('Trying to GET all unique manufacturers in PRODUCTS TABLE')
+
+                // DEFINIR FILTRO PELO RATING/TRANSFORMAR RATING EM FLOAT!!!
+                const allManufacturers = await Product.findAll({
+                    attributes: ['manufacturer'],
+                    where: {
+                        price: { [Op.gte]: 4000 }
+                    }
+                })
+                    .then(res => JSON.parse(JSON.stringify(res)))
+                    .then(data => {
+                        const mArray = data
+                            .filter(f => f.manufacturer !== null)
+                            .map(m => m.manufacturer.trim())
+                        return [...new Set(mArray)]
+                    })
+                return res.send(allManufacturers)
+            }
 
         } catch (ex) {
             console.log('Error: ', ex.message)
