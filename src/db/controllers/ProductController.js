@@ -5,12 +5,45 @@ module.exports = {
 
     async index(req, res) {
         try {
+            // MELHORAR ESSE TRATAMENTO DA QUERY >>>
+            // AINDA ESTOU FAZENDO MUITAS OPERAÇÕES >>>
+            // TENTAR FAZER TUDO USANDO O PRÓPRIO ORM >>>
             console.log('Trying to GET LIST of Products!')
+            console.debug('Applying query values OR default values:')
+
             const manufacturers = req.query.mn
-            const maxPrice = parseFloat(req.query.mp)
+                ? req.query.mn
+                : await Product.findAll({ attributes: ['manufacturer'] })
+                    .then(res => JSON.parse(JSON.stringify(res)))
+                    .then(data => {
+                        const mArray = data
+                            .filter(f => f.manufacturer !== null)
+                            .map(m => m.manufacturer.trim())
+                        return [...new Set(mArray)]
+                    })
+
+            const maxPrice = req.query.mp
+                ? parseFloat(req.query.mp)
+                : await Product.max('price')
+
             const retailers = req.query.rt
+                ? req.query.rt
+                : await Product.findAll({ attributes: ['retailer'] })
+                    .then(res => JSON.parse(JSON.stringify(res)))
+                    .then(data => {
+                        const rArray = data
+                            .filter(f => f.retailer !== null)
+                            .map(m => m.retailer.trim())
+                        return [...new Set(rArray)]
+                    })
+
             const paginationLimit = req.query.pl
+                ? req.query.pl
+                : '30'
+
             const orderByPrice = req.query.ob_d
+                ? req.query.ob_d
+                : 'DESC'
             // const rating = req.query.sr
 
             const queryHash = {
@@ -27,8 +60,6 @@ module.exports = {
             const products = await Product.findAll(queryHash)
             console.info('\nQuery data from req.query:')
             console.info(req.query)
-            console.info('\nQuery Parsed from Hash:')
-            console.info(queryHash)
 
             return res.status(200).json(products)
 
