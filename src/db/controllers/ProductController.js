@@ -5,11 +5,16 @@ module.exports = {
 
     async index(req, res) {
         try {
-            // MELHORAR ESSE TRATAMENTO DA QUERY >>>
-            // AINDA ESTOU FAZENDO MUITAS OPERAÇÕES >>>
-            // TENTAR FAZER TUDO USANDO O PRÓPRIO ORM >>>
             console.log('Trying to GET LIST of Products!')
             console.debug('Applying query values OR default values:')
+
+            const pageNumber = req.query.pg
+                ? parseInt(req.query.pg)
+                : 1
+
+            const pageLimit = req.query.pl
+                ? parseInt(req.query.pl)
+                : '30'
 
             const manufacturers = req.query.mn
                 ? req.query.mn
@@ -37,9 +42,6 @@ module.exports = {
                         return [...new Set(rArray)]
                     })
 
-            const paginationLimit = req.query.pl
-                ? req.query.pl
-                : '30'
 
             const orderByPrice = req.query.ob_p
                 ? req.query.ob_p
@@ -50,7 +52,6 @@ module.exports = {
                 : 4
 
             const queryHash = {
-                limit: parseInt(paginationLimit),
                 order: [['price', orderByPrice === '1' ? 'ASC' : 'DESC']],
                 where: {
 
@@ -65,7 +66,41 @@ module.exports = {
             console.info('\nQuery data from req.query:')
             console.info(req.query)
 
-            return res.status(200).json(products)
+
+            // Calculating pagination:
+            const startIndex = (pageNumber - 1) * pageLimit
+            const endIndex = pageNumber * pageLimit
+
+            const productsArray = JSON.parse(JSON.stringify(products))
+            const totalPages = (productsArray.length % pageLimit) !== 0
+                ? parseInt(productsArray.length / pageLimit) + 1
+                : productsArray.length / pageLimit
+
+            const results = {}
+            const productsResults = productsArray.slice(startIndex, endIndex)
+            console.info('\nCreating meta data for pagination:')
+
+            results.results = productsResults
+
+            results.totalPages = totalPages
+
+            if (endIndex < productsArray.length) {
+                results.next = {
+                    page: pageNumber + 1,
+                    limite: pageLimit,
+                }
+            }
+
+            if (startIndex > 0) {
+                results.previous = {
+                    page: pageNumber - 1,
+                    limite: pageLimit,
+                }
+            }
+
+            console.debug(results)
+            console.info('\nSending [%s] products for page [%s]', pageLimit, pageNumber)
+            return res.status(200).json(results)
 
         } catch (ex) {
             console.log('Error: ', ex.message)
@@ -85,7 +120,6 @@ module.exports = {
             } else if (metaValue === 'man') {
                 console.log('Trying to GET all unique manufacturers in PRODUCTS TABLE')
 
-                // DEFINIR FILTRO PELO RATING/TRANSFORMAR RATING EM FLOAT!!!
                 const allManufacturers = await Product.findAll({
                     attributes: ['manufacturer'],
                     where: {
